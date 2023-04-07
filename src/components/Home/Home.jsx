@@ -1,12 +1,48 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
+import TShirt from '../TShirt/TShirt';
+import Cart from '../Cart/Cart';
+import './Home.css'
+import toast from 'react-hot-toast';
 
 const Home = () => {
     const tshirt = useLoaderData();
+    const [cart, setCart] = useState([]);
+    const handleAddToCart = tshirt => {
+        const exists = cart.find(ts => ts._id === tshirt._id);
+        if (exists) {
+            toast('You have already added TShirt')
+        }
+        else {
+            // push . used push in normal array not state
+            const newCart = [...cart, tshirt];
+            setCart(newCart)
+        }
+
+
+    }
+
+    const handleRemoveFromCart = id => {
+        const remaining = cart.filter(ts => ts._id !== id);
+        setCart(remaining);
+    }
 
     return (
-        <div>
-            <h2>home: {tshirt.length}</h2>
+        <div className='home-container'>
+            <div className='t-shirts-container'>
+                {
+                    tshirt.map(tshirt => <TShirt
+                        key={tshirt._id}
+                        tshirt={tshirt}
+                        handleAddToCart={handleAddToCart}
+                    ></TShirt>)
+                }
+            </div>
+            <div className="cart-container">
+                <Cart cart={cart}
+                    handleRemoveFromCart={handleRemoveFromCart}
+                ></Cart>
+            </div>
         </div>
     );
 };
